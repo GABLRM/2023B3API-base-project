@@ -32,13 +32,13 @@ export class UserService {
     return addNewUser
   }
 
-  findEmployees(id: string) {
-    const findEmployee = this.usersRepository.findOne({where: {id: id}});
+  async findEmployee(uuid: string) {
+    const findEmployee = await this.usersRepository.findOne({where: {id: uuid}});
     console.log(findEmployee);
-    if (findEmployee === undefined) {
+    if (findEmployee === null) {
       throw new HttpException(" employee not found", HttpStatus.NOT_FOUND);
     }
-
+    return findEmployee;
   }
 
   findAll() {

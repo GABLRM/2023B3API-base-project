@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ValidationPipe, UsePipes, Get, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, UsePipes, Get, Param, UseGuards, Req, ParseUUIDPipe, HttpStatus } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from '../auth/auth.service';
@@ -24,15 +24,14 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get('me')
-  async getMyProfile(@Req() req) {
-    const me = await this.userService.findOne(req.user.sub);
-    return me;
+  getMyProfile(@Req() req) {
+    return this.userService.findEmployee(req.user.sub);
   }
 
   @UseGuards(AuthGuard)
   @Get(":id")
-  findOneId(@Param('id') id: string) {
-    return this.userService.findOne(id)
+  findOneUuid(@Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST})) id: string) {
+    return this.userService.findEmployee(id)
   }
 
   @UseGuards(AuthGuard)
