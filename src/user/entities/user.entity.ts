@@ -1,5 +1,4 @@
-import { Exclude } from "class-transformer";
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserRole {
   EMPLOYEE = 'Employee',

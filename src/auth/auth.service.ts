@@ -19,7 +19,7 @@ export class AuthService {
         }
         const playload = { email: user.email, sub: user.id }
         return {
-            access_token: await this.jwtService.signAsync(playload),
+            access_token: await this.jwtService.signAsync(playload, { secret: process.env.JWT_SECRET }),
         };
     }
 }

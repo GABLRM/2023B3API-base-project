@@ -1,10 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
-
 
 @Injectable()
 export class UserService {
@@ -14,11 +13,11 @@ export class UserService {
   ) { }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
-    return await this.usersRepository.findOne({ where: { email : email }});
+    return await this.usersRepository.findOne({ where: { email: email } });
   }
 
   async findAuth(email: string): Promise<User | undefined> {
-    return await this.usersRepository.findOne({ where: { email : email },select:{id: true, username: true, email:true, password: true, role:true}});
+    return await this.usersRepository.findOne({ where: { email: email }, select: { id: true, username: true, email: true, password: true, role: true } });
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -27,10 +26,19 @@ export class UserService {
       ...createUserDto,
       role: createUserDto.role ?? UserRole.EMPLOYEE,
       password: await bcrypt.hash(createUserDto.password, saltOrRounds),
-    }); 
+    });
     const addNewUser = await this.usersRepository.save(newUser);
     delete addNewUser.password
     return addNewUser
+  }
+
+  findEmployees(id: string) {
+    const findEmployee = this.usersRepository.findOne({where: {id: id}});
+    console.log(findEmployee);
+    if (findEmployee === undefined) {
+      throw new HttpException(" employee not found", HttpStatus.NOT_FOUND);
+    }
+
   }
 
   findAll() {
@@ -38,7 +46,7 @@ export class UserService {
   }
 
   findOne(id: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
+    return this.usersRepository.findOne( { where: { id: id } });
   }
 
   remove(id: number) {

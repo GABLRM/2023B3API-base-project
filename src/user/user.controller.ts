@@ -1,13 +1,14 @@
-import { Controller, Post, Body, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, UsePipes, Get, Param, UseGuards, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from '../auth/auth.service';
-
+import { AuthGuard } from '../auth/jwt-auth.guard';
+import { User } from './entities/user.entity';
 @Controller('users')
 export class UserController {
   constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService
+    private userService: UserService,
+    private authService: AuthService
   ) { }
 
   @Post("auth/sign-up")
@@ -17,7 +18,26 @@ export class UserController {
   }
 
   @Post("auth/login")
-  signIn(@Body('email') email : string, @Body('password') password : string) {
+  signIn(@Body('email') email: string, @Body('password') password: string) {
     return this.authService.signIn(email, password);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('me')
+  async getMyProfile(@Req() req) {
+    const me = await this.userService.findOne(req.user.sub);
+    return me;
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(":id")
+  findOneId(@Param('id') id: string) {
+    return this.userService.findOne(id)
+  }
+
+  @UseGuards(AuthGuard)
+  @Get()
+  findAllUsers() {
+    return this.userService.findAll()
   }
 }
