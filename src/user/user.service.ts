@@ -34,7 +34,6 @@ export class UserService {
 
   async findEmployee(uuid: string) {
     const findEmployee = await this.usersRepository.findOne({where: {id: uuid}});
-    console.log(findEmployee);
     if (findEmployee === null) {
       throw new HttpException(" employee not found", HttpStatus.NOT_FOUND);
     }
@@ -45,7 +44,7 @@ export class UserService {
     return this.usersRepository.find();
   }
 
-  findOne(id: string): Promise<User | null> {
+  findOne(id: string) {
     return this.usersRepository.findOne( { where: { id: id } });
   }
 
