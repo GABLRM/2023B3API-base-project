@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, UnauthorizedException, Param, HttpException, HttpStatus, Get } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { AuthGuard } from '../auth/jwt-auth.guard';
@@ -16,9 +16,9 @@ export class ProjectsController {
   async create(@Req() req, @Body() createProjectDto: CreateProjectDto) {
     const currentUser = await this.userService.findOne(req.user.sub);
     const referringEmployee = await this.userService.findOne(createProjectDto.referringEmployeeId);
-    if (referringEmployee.role != 'Employee') {
-      if (currentUser.role == 'Admin') {
-        return this.projectsService.create(createProjectDto);
+    if (referringEmployee.role !== 'Employee') {
+      if (currentUser.role === 'Admin') {
+        return this.projectsService.create(createProjectDto)
       } else {
         throw new UnauthorizedException();
       }
@@ -29,13 +29,23 @@ export class ProjectsController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll(@Req() req) {
-    const currentUser = req.user;
-    console.log("1 - ", currentUser) 
-    if (currentUser.role === 'Admin' || currentUser.role === 'ProjectManager') {
-      return this.projectsService.findAll();
+  async findProject(@Req() req) {
+    const currentUser = await this.userService.findOne(req.user.sub);
+    if (currentUser.role === "Employee") {
+      return null;
     } else {
-      return this.projectsService.findAllByReferringEmployee(currentUser.id);
+      return this.projectsService.findAll();
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(':id')
+  async findOneProject(@Req() req, @Param('id') id: string) {
+    const currentUser = await this.userService.findOne(req.user.sub);
+    const desiredProject = await this.projectsService.findProjectById(id);
+
+    if (desiredProject === null) {
+      throw new HttpException("Project not found", HttpStatus.NOT_FOUND)
     }
   }
 }

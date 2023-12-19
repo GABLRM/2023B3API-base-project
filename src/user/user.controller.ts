@@ -3,7 +3,6 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from '../auth/jwt-auth.guard';
-import { User } from './entities/user.entity';
 @Controller('users')
 export class UserController {
   constructor(

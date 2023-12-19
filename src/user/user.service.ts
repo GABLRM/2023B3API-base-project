@@ -35,7 +35,7 @@ export class UserService {
   async findEmployee(uuid: string) {
     const findEmployee = await this.usersRepository.findOne({where: {id: uuid}});
     if (findEmployee === null) {
-      throw new HttpException(" employee not found", HttpStatus.NOT_FOUND);
+      throw new HttpException("employee not found", HttpStatus.NOT_FOUND);
     }
     return findEmployee;
   }

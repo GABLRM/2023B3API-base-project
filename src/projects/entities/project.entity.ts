@@ -1,5 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "../../user/entities/user.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Project {
@@ -7,7 +6,7 @@ export class Project {
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
-    @Column( {unique: true} )
+    @Column()
     public name!: string;
 
     @Column()

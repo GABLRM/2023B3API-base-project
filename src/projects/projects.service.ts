@@ -3,6 +3,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ProjectsService {
@@ -10,18 +11,26 @@ export class ProjectsService {
   constructor(
       @InjectRepository(Project)
       private projetcsRepository: Repository<Project>,
+      private userService: UserService
     ) { }
 
-  create(createProjectDto: CreateProjectDto) {
+  async create(createProjectDto: CreateProjectDto) {
     const newProject = this.projetcsRepository.create(createProjectDto);
-    return this.projetcsRepository.save(newProject);
+    const project = await this.projetcsRepository.save(newProject);
+    project["referringEmployee"] = await this.userService.findEmployee(createProjectDto.referringEmployeeId);
+    return project;
   }
 
   findAll() {
     return this.projetcsRepository.find();
   }
 
-    findAllByReferringEmployee(id: string) {
+    findReferringEmployee(id: string) {
     return this.projetcsRepository.find({ where: { id: id } });
   }
+
+  findProjectById(id: string) {
+    return this.projetcsRepository.find({ where: { id: id } });
+  }
+
 }
