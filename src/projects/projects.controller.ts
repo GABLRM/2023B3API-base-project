@@ -8,17 +8,17 @@ import { UserService } from '../user/user.service';
 export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) { }
 
   @UseGuards(AuthGuard)
   @Post()
   async create(@Req() req, @Body() createProjectDto: CreateProjectDto) {
     const currentUser = await this.userService.findOne(req.user.sub);
-    const referringEmployee = await this.userService.findOne(createProjectDto.referringEmployeeId);
+    const referringEmployee = await this.userService.findOne(createProjectDto.referringEmployeeId,);
     if (referringEmployee.role !== 'Employee') {
       if (currentUser.role === 'Admin') {
-        return this.projectsService.create(createProjectDto)
+        return this.projectsService.create(createProjectDto);
       } else {
         throw new UnauthorizedException();
       }
@@ -31,7 +31,7 @@ export class ProjectsController {
   @Get()
   async findProject(@Req() req) {
     const currentUser = await this.userService.findOne(req.user.sub);
-    if (currentUser.role === "Employee") {
+    if (currentUser.role === 'Employee') {
       return null;
     } else {
       return this.projectsService.findAll();
@@ -46,7 +46,7 @@ export class ProjectsController {
 
     console.log('2 - ' + JSON.stringify(desiredProject));
     if (desiredProject.length === 0) {
-      throw new HttpException("Project not found", HttpStatus.NOT_FOUND)
+      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
     }
 
     if (currentUser.id) {
