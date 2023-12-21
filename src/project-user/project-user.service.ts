@@ -21,7 +21,11 @@ export class ProjectUserService {
     return this.projectUserRepository.find();
   }
 
-  findEmployeeProject(userId: string) {
-    return this.projectUserRepository.find({ where: { id: userId } });
+  findOne(id: string) {
+    return this.projectUserRepository.find({ where: { id: id } });
+  }
+
+  userInProject(id: string) {
+    return this.projectUserRepository.find({ where: { userId: id } })
   }
 }

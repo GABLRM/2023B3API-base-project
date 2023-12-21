@@ -44,8 +44,13 @@ export class ProjectsController {
     const currentUser = await this.userService.findOne(req.user.sub);
     const desiredProject = await this.projectsService.findProjectById(id);
 
-    if (desiredProject === null) {
+    console.log('2 - ' + JSON.stringify(desiredProject));
+    if (desiredProject.length === 0) {
       throw new HttpException("Project not found", HttpStatus.NOT_FOUND)
+    }
+
+    if (currentUser.id) {
+      
     }
   }
 }
