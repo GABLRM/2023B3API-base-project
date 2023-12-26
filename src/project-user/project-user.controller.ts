@@ -1,7 +1,7 @@
-import { Controller, Get, UseGuards, Req, Param, Post, HttpException, HttpStatus, Body } from "@nestjs/common";
-import { ProjectUserService } from './project-user.service';
-import { AuthGuard } from '../auth/jwt-auth.guard';
-import { UserService } from '../user/user.service';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { ProjectUserService } from "./project-user.service";
+import { AuthGuard } from "../auth/jwt-auth.guard";
+import { UserService } from "../user/user.service";
 import { CreateProjectUserDto } from "./dto/create-project-user.dto";
 import { ProjectsService } from "../projects/projects.service";
 
@@ -29,9 +29,7 @@ export class ProjectUserController {
   async findSpecificProject(@Req() req, @Param('id') id: string) {
     const currentUser = await this.userService.findOne(req.user.sub);
     if (currentUser.role !== 'Employee') {
-      const hello = await this.projectUserService.findOne(id);
-      console.log("2 - " + JSON.stringify(hello))
-      return hello
+      return await this.projectUserService.findOne(id)
     } else {
       const employeeProject = await this.projectUserService.findEmployeeProject(id, currentUser.id);
       if (employeeProject.length == 0) {

@@ -29,7 +29,6 @@ export class ProjectsController {
     }
   }
 
-  // TODO Finir /project pour après faire /project-Usera
   @UseGuards(AuthGuard)
   @Get()
   async findProject(@Req() req) {
