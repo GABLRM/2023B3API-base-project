@@ -5,11 +5,11 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @MinLength(3)
-    public username!: string; // cette propriété doit porter une contrainte d'unicité
+    public username!: string;
 
     @IsNotEmpty()
     @IsEmail()
-    public email!: string; // cette propriété doit porter une contrainte d'unicité
+    public email!: string;
 
     @IsNotEmpty()
     @MinLength(8)

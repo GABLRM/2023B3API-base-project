@@ -5,11 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectUser } from './entities/project-user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UserModule } from "../user/user.module";
+import { ProjectsModule } from "../projects/projects.module";
+import { Project } from "../projects/entities/project.entity";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProjectUser]),
-    forwardRef(() => UserModule),],
+    forwardRef(() => ProjectsModule),
+    forwardRef(() => UserModule)],
   controllers: [ProjectUserController],
   providers: [ProjectUserService, JwtService],
   exports: [ProjectUserService]

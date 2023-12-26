@@ -20,7 +20,7 @@ export class ProjectUserController {
     if (currentUser.role !== 'Employee') {
       return this.projectUserService.findAll();
     } else {
-      return this.projectUserService.findOne(req.user.sub);
+      return this.projectUserService.userInProject(req.user.sub);
     }
   }
 
@@ -29,9 +29,16 @@ export class ProjectUserController {
   async findSpecificProject(@Req() req, @Param('id') id: string) {
     const currentUser = await this.userService.findOne(req.user.sub);
     if (currentUser.role !== 'Employee') {
-      return this.projectUserService.findOne(id);
+      const hello = await this.projectUserService.findOne(id);
+      console.log("2 - " + JSON.stringify(hello))
+      return hello
     } else {
-      return this.projectUserService.findOne(req.user.sub);
+      const employeeProject = await this.projectUserService.findEmployeeProject(id, currentUser.id);
+      if (employeeProject.length == 0) {
+        throw new HttpException("You don't have the authorization to access this project", HttpStatus.UNAUTHORIZED);
+      } else {
+        return employeeProject
+      }
     }
   }
 
@@ -41,11 +48,13 @@ export class ProjectUserController {
     const currentUser = await this.userService.findOne(req.user.sub);
     const userProject = await this.userService.findOne(createProjectUserDto.userId);
     const project = await this.projectsService.findProjectById(createProjectUserDto.projectId);
-    if (currentUser.role == 'Employee') {
-      throw new HttpException('Employee can create Project', HttpStatus.UNAUTHORIZED);
+    if (userProject === null || project === null) {
+      throw new HttpException('The user or the project not exist', HttpStatus.NOT_FOUND);
     }
-    if (userProject == null || project == null) {
-       throw new HttpException('The user or the project not exist', HttpStatus.NOT_FOUND);
+    if (currentUser.role !== 'Employee') {
+      return this.projectUserService.create(createProjectUserDto)
+    } else {
+      throw new HttpException('Employee can create Project', HttpStatus.UNAUTHORIZED);
     }
   }
 }

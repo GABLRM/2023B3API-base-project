@@ -3,12 +3,14 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { AuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from '../user/user.service';
+import { ProjectUserService } from "../project-user/project-user.service";
 
 @Controller('projects')
 export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
     private readonly userService: UserService,
+    private readonly projectUserService : ProjectUserService,
   ) { }
 
   @UseGuards(AuthGuard)
@@ -27,12 +29,13 @@ export class ProjectsController {
     }
   }
 
+  // TODO Finir /project pour après faire /project-Usera
   @UseGuards(AuthGuard)
   @Get()
   async findProject(@Req() req) {
     const currentUser = await this.userService.findOne(req.user.sub);
     if (currentUser.role === 'Employee') {
-      return null;
+      return await this.projectsService.findProjectWithUserInfo(currentUser.id)
     } else {
       return this.projectsService.findAll();
     }
@@ -43,14 +46,13 @@ export class ProjectsController {
   async findOneProject(@Req() req, @Param('id') id: string) {
     const currentUser = await this.userService.findOne(req.user.sub);
     const desiredProject = await this.projectsService.findProjectById(id);
-
-    console.log('2 - ' + JSON.stringify(desiredProject));
-    if (desiredProject.length === 0) {
+    if (desiredProject === null) {
       throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
     }
-
-    if (currentUser.id) {
-      
+    if (currentUser.role !== 'Employee') {
+      return desiredProject
+    } else {
+      return await this.projectUserService.findEmployeeProject(id, currentUser.id);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateProjectDto } from './dto/create-project.dto';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
@@ -29,8 +29,17 @@ export class ProjectsService {
     return this.projetcsRepository.find({ where: { id: id } });
   }
 
-  findProjectById(id: string) {
-    return this.projetcsRepository.find({ where: { id: id } });
+  async findProjectById(id: string) {
+    const findProject =  await this.projetcsRepository.findOne({ where : {id : id}})
+    if (findProject === null) {
+      throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
+    }
+    return findProject
+  }
+
+  async findProjectWithUserInfo(userid: string) {
+    const project = this.projetcsRepository.find({ where: { referringEmployeeId: userid } });
+    project["referringEmployee"] = await this.userService.findEmployee(userid);
   }
 
 }

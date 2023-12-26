@@ -13,6 +13,4 @@ export class CreateProjectUserDto {
 
     @IsNotEmpty()
     public projectId!: string;
-
-
 }
