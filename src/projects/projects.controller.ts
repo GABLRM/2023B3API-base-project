@@ -1,9 +1,21 @@
-import { Controller, Post, Body, Req, UseGuards, UnauthorizedException, Param, HttpException, HttpStatus, Get } from '@nestjs/common';
-import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { AuthGuard } from '../auth/jwt-auth.guard';
-import { UserService } from '../user/user.service';
+import {
+  Body,
+  Controller, ForbiddenException,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+  UnauthorizedException,
+  UseGuards
+} from "@nestjs/common";
+import { ProjectsService } from "./projects.service";
+import { CreateProjectDto } from "./dto/create-project.dto";
+import { AuthGuard } from "../auth/jwt-auth.guard";
+import { UserService } from "../user/user.service";
 import { ProjectUserService } from "../project-user/project-user.service";
+import { th } from "@faker-js/faker";
 
 @Controller('projects')
 export class ProjectsController {
@@ -33,10 +45,21 @@ export class ProjectsController {
   @Get()
   async findProject(@Req() req) {
     const currentUser = await this.userService.findOne(req.user.sub);
-    if (currentUser.role === 'Employee') {
-      return await this.projectsService.findProjectWithUserInfo(currentUser.id)
+    if (currentUser.role !== 'Employee') {
+      const allProject = await this.projectsService.findAll();
+      for (const project of allProject) {
+        project["referringEmployee"] = await this.userService.findEmployee(project.referringEmployeeId);
+      }
+      return allProject;
     } else {
-      return this.projectsService.findAll();
+      const employeeProject = []
+      const projectUser = await this.projectUserService.findEmployeeInProject(currentUser.id);
+      for (const items of projectUser) {
+        const project = await this.projectsService.findProjectById(items.projectId);
+        project["referringEmployee"] = await this.userService.findEmployee(project.referringEmployeeId);
+        employeeProject.push(project)
+      }
+      return employeeProject;
     }
   }
 
@@ -49,9 +72,14 @@ export class ProjectsController {
       throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
     }
     if (currentUser.role !== 'Employee') {
-      return desiredProject
+      return desiredProject;
     } else {
-      return await this.projectUserService.findEmployeeProject(id, currentUser.id);
+      const userProject = await this.projectUserService.findUserProjectWithProjectId(desiredProject.id)
+      if (userProject.length === 0) {
+        throw new ForbiddenException("Forbidden")
+      } else {
+        return desiredProject
+      }
     }
   }
 }

@@ -40,10 +40,18 @@ export class ProjectUserService {
   }
 
   findEmployeeProject(id, userId) {
-    return this.projectUserRepository.find( { where : { id: id, userId : userId } })
+    return this.projectUserRepository.find( { where : { id: id, userId : userId } });
+  }
+
+  findEmployeeInProject(userId) {
+    return this.projectUserRepository.find({ where : { userId: userId } });
+  }
+
+  findUserProjectWithProjectId(projectId) {
+    return this.projectUserRepository.find({ where : { projectId: projectId}})
   }
 
   userInProject(id: string) {
-    return this.projectUserRepository.find({ where: { userId: id } })
+    return this.projectUserRepository.find({ where: { userId: id } });
   }
 }

@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { CreateProjectDto } from './dto/create-project.dto';
-import { Repository } from 'typeorm';
-import { Project } from './entities/project.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserService } from '../user/user.service';
+import { CreateProjectDto } from "./dto/create-project.dto";
+import { Repository } from "typeorm";
+import { Project } from "./entities/project.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class ProjectsService {
@@ -21,8 +21,8 @@ export class ProjectsService {
     return project;
   }
 
-  findAll() {
-    return this.projetcsRepository.find();
+  async findAll() {
+    return await this.projetcsRepository.find()
   }
 
     findReferringEmployee(id: string) {
@@ -40,6 +40,6 @@ export class ProjectsService {
   async findProjectWithUserInfo(userid: string) {
     const project = this.projetcsRepository.find({ where: { referringEmployeeId: userid } });
     project["referringEmployee"] = await this.userService.findEmployee(userid);
+    return project;
   }
-
 }
