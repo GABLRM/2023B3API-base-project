@@ -6,7 +6,6 @@ import { ProjectUser } from './entities/project-user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UserModule } from "../user/user.module";
 import { ProjectsModule } from "../projects/projects.module";
-import { Project } from "../projects/entities/project.entity";
 
 @Module({
   imports: [
@@ -17,4 +16,4 @@ import { Project } from "../projects/entities/project.entity";
   providers: [ProjectUserService, JwtService],
   exports: [ProjectUserService]
 })
-export class ProjectUserModule {}
+export class ProjectUserModule { }

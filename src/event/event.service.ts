@@ -8,11 +8,11 @@ import { Repository } from "typeorm";
 export class EventService {
 
   constructor(
-      @InjectRepository(Event)
-      private eventRepository : Repository<Event>
+    @InjectRepository(Event)
+    private eventRepository: Repository<Event>
   ) {
   }
-  async create(createEventDto: CreateEventDto, userId : string) {
+  async create(createEventDto: CreateEventDto, userId: string) {
     const newEvent = this.eventRepository.create(createEventDto);
     newEvent.userId = userId;
     return this.eventRepository.save(newEvent);
@@ -27,16 +27,16 @@ export class EventService {
   }
 
   async findOne(id: string) {
-    return await this.eventRepository.findOne( { where : { id : id }});
+    return await this.eventRepository.findOne({ where: { id: id } });
   }
 
-  async validate(eventId : string) {
+  async validate(eventId: string) {
     const eventToValidate = await this.findOne(eventId);
     eventToValidate.eventStatus = EventStatus.ACCEPTED;
     return eventToValidate;
   }
 
-  async decline(eventId : string) {
+  async decline(eventId: string) {
     const eventToValidate = await this.findOne(eventId);
     eventToValidate.eventStatus = EventStatus.DECLINED;
     return eventToValidate;

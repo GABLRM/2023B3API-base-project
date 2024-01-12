@@ -13,4 +13,4 @@ import { ProjectUserModule } from "../project-user/project-user.module";
   providers: [UserService],
   exports: [UserService]
 })
-export class UserModule {}
+export class UserModule { }

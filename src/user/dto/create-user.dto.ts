@@ -17,5 +17,5 @@ export class CreateUserDto {
 
     @IsEnum(UserRole)
     @IsOptional()
-    public role!: UserRole
+    public role!: UserRole;
 }

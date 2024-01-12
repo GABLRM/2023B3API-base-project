@@ -9,7 +9,7 @@ import { Project } from './projects/entities/project.entity';
 import { ProjectUserModule } from './project-user/project-user.module';
 import { ProjectUser } from './project-user/entities/project-user.entity';
 import { EventModule } from './event/event.module';
-import { Event} from "./event/entities/event.entity";
+import { Event } from "./event/entities/event.entity";
 
 @Module({
   imports: [

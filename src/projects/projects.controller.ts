@@ -1,28 +1,16 @@
-import {
-  Body,
-  Controller, ForbiddenException,
-  Get,
-  HttpException,
-  HttpStatus, NotFoundException,
-  Param,
-  Post,
-  Req,
-  UnauthorizedException,
-  UseGuards
-} from "@nestjs/common";
+import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ProjectsService } from "./projects.service";
 import { CreateProjectDto } from "./dto/create-project.dto";
 import { AuthGuard } from "../auth/jwt-auth.guard";
 import { UserService } from "../user/user.service";
 import { ProjectUserService } from "../project-user/project-user.service";
-import { th } from "@faker-js/faker";
 
 @Controller('projects')
 export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
     private readonly userService: UserService,
-    private readonly projectUserService : ProjectUserService,
+    private readonly projectUserService: ProjectUserService,
   ) { }
 
   @UseGuards(AuthGuard)
@@ -52,12 +40,12 @@ export class ProjectsController {
       }
       return allProject;
     } else {
-      const employeeProject = []
+      const employeeProject = [];
       const projectUser = await this.projectUserService.findEmployeeInProject(currentUser.id);
       for (const items of projectUser) {
         const project = await this.projectsService.findProjectById(items.projectId);
         project["referringEmployee"] = await this.userService.findEmployee(project.referringEmployeeId);
-        employeeProject.push(project)
+        employeeProject.push(project);
       }
       return employeeProject;
     }
@@ -74,11 +62,11 @@ export class ProjectsController {
     if (currentUser.role !== 'Employee') {
       return desiredProject;
     } else {
-      const userProject = await this.projectUserService.findUserProjectWithProjectId(desiredProject.id)
+      const userProject = await this.projectUserService.findUserProjectWithProjectId(desiredProject.id);
       if (userProject.length === 0) {
-        throw new ForbiddenException("Forbidden")
+        throw new ForbiddenException("Forbidden");
       } else {
-        return desiredProject
+        return desiredProject;
       }
     }
   }

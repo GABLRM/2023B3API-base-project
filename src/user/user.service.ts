@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './entities/user.entity';
@@ -12,10 +12,6 @@ export class UserService {
     private usersRepository: Repository<User>,
   ) { }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
-    return await this.usersRepository.findOne({ where: { email: email } });
-  }
-
   async findAuth(email: string): Promise<User | undefined> {
     return await this.usersRepository.findOne({ where: { email: email }, select: { id: true, username: true, email: true, password: true, role: true } });
   }
@@ -28,12 +24,12 @@ export class UserService {
       password: await bcrypt.hash(createUserDto.password, saltOrRounds),
     });
     const addNewUser = await this.usersRepository.save(newUser);
-    delete addNewUser.password
-    return addNewUser
+    delete addNewUser.password;
+    return addNewUser;
   }
 
   async findEmployee(uuid: string) {
-    const findEmployee = await this.usersRepository.findOne({where: {id: uuid}});
+    const findEmployee = await this.usersRepository.findOne({ where: { id: uuid } });
     if (findEmployee === null) {
       throw new NotFoundException("employee not found");
     }
@@ -45,10 +41,6 @@ export class UserService {
   }
 
   findOne(id: string) {
-    return this.usersRepository.findOne( { where: { id: id } });
-  }
-
-  remove(id: number) {
-    return this.usersRepository.delete(id);
+    return this.usersRepository.findOne({ where: { id: id } });
   }
 }

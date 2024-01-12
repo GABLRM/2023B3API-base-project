@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateProjectDto } from "./dto/create-project.dto";
 import { Repository } from "typeorm";
 import { Project } from "./entities/project.entity";
@@ -7,12 +7,12 @@ import { UserService } from "../user/user.service";
 
 @Injectable()
 export class ProjectsService {
-  
+
   constructor(
-      @InjectRepository(Project)
-      private projetcsRepository: Repository<Project>,
-      private userService: UserService
-    ) { }
+    @InjectRepository(Project)
+    private projetcsRepository: Repository<Project>,
+    private userService: UserService
+  ) { }
 
   async create(createProjectDto: CreateProjectDto) {
     const newProject = this.projetcsRepository.create(createProjectDto);
@@ -22,14 +22,14 @@ export class ProjectsService {
   }
 
   async findAll() {
-    return await this.projetcsRepository.find()
+    return await this.projetcsRepository.find();
   }
 
   async findProjectById(id: string) {
-    const findProject =  await this.projetcsRepository.findOne({ where : {id : id}})
+    const findProject = await this.projetcsRepository.findOne({ where: { id: id } });
     if (findProject === null) {
-      throw new NotFoundException('Project not found')
+      throw new NotFoundException('Project not found');
     }
-    return findProject
+    return findProject;
   }
 }

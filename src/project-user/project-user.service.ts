@@ -12,7 +12,7 @@ export class ProjectUserService {
   constructor(
     @InjectRepository(ProjectUser)
     private projectUserRepository: Repository<ProjectUser>,
-    private userService : UserService,
+    private userService: UserService,
     private projectService: ProjectsService,
 
   ) { }
@@ -25,9 +25,9 @@ export class ProjectUserService {
     return userProject;
   }
   async findProjectWithReferringEmployeeInfo(projetId: string) {
-    const project =  await this.projectService.findProjectById(projetId);
+    const project = await this.projectService.findProjectById(projetId);
     project['referringEmployee'] = await this.userService.findEmployee(project.referringEmployeeId);
-    return project
+    return project;
   }
 
 
@@ -40,15 +40,15 @@ export class ProjectUserService {
   }
 
   findEmployeeProject(id, userId) {
-    return this.projectUserRepository.find( { where : { id: id, userId : userId } });
+    return this.projectUserRepository.find({ where: { id: id, userId: userId } });
   }
 
   findEmployeeInProject(userId) {
-    return this.projectUserRepository.find({ where : { userId: userId } });
+    return this.projectUserRepository.find({ where: { userId: userId } });
   }
 
   findUserProjectWithProjectId(projectId) {
-    return this.projectUserRepository.find({ where : { projectId: projectId}})
+    return this.projectUserRepository.find({ where: { projectId: projectId } });
   }
 
   userInProject(id: string) {

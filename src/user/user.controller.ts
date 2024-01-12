@@ -29,13 +29,13 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get(":id")
-  findOneUuid(@Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST})) id: string) {
-    return this.userService.findEmployee(id)
+  findOneUuid(@Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST })) id: string) {
+    return this.userService.findEmployee(id);
   }
 
   @UseGuards(AuthGuard)
   @Get()
   findAllUsers() {
-    return this.userService.findAll()
+    return this.userService.findAll();
   }
 }

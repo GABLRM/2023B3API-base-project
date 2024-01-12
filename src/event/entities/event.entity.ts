@@ -19,7 +19,7 @@ export class Event {
     @Column()
     public date!: Date;
 
-    @Column({default: EventStatus.PENDING})
+    @Column({ default: EventStatus.PENDING })
     public eventStatus?: EventStatus;
 
     @Column()

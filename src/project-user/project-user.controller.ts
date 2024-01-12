@@ -1,15 +1,4 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus, NotFoundException,
-  Param,
-  Post,
-  Req, UnauthorizedException,
-  UseGuards
-} from "@nestjs/common";
+import { Body, ConflictException, Controller, Get, NotFoundException, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ProjectUserService } from "./project-user.service";
 import { AuthGuard } from "../auth/jwt-auth.guard";
 import { UserService } from "../user/user.service";
@@ -21,8 +10,8 @@ export class ProjectUserController {
   constructor(
     private readonly projectUserService: ProjectUserService,
     private readonly userService: UserService,
-    private readonly projectsService : ProjectsService,
-  ) {}
+    private readonly projectsService: ProjectsService,
+  ) { }
 
   @UseGuards(AuthGuard)
   @Get()
@@ -40,20 +29,20 @@ export class ProjectUserController {
   async findSpecificProject(@Req() req, @Param('id') id: string) {
     const currentUser = await this.userService.findOne(req.user.sub);
     if (currentUser.role !== 'Employee') {
-      return await this.projectUserService.findOne(id)
+      return await this.projectUserService.findOne(id);
     } else {
       const employeeProject = await this.projectUserService.findEmployeeProject(id, currentUser.id);
       if (employeeProject.length == 0) {
         throw new UnauthorizedException("You don't have the authorization to access this project");
       } else {
-        return employeeProject
+        return employeeProject;
       }
     }
   }
 
   @UseGuards(AuthGuard)
   @Post()
-  async createProjetUser(@Req() req, @Body() createProjectUser : CreateProjectUserDto ) {
+  async createProjetUser(@Req() req, @Body() createProjectUser: CreateProjectUserDto) {
     const currentUser = await this.userService.findOne(req.user.sub);
     const userProject = await this.userService.findOne(createProjectUser.userId);
     const project = await this.projectsService.findProjectById(createProjectUser.projectId);
@@ -67,7 +56,7 @@ export class ProjectUserController {
       }
     }
     if (currentUser.role !== 'Employee') {
-      return this.projectUserService.create(createProjectUser)
+      return this.projectUserService.create(createProjectUser);
     } else {
       throw new UnauthorizedException('Employee can create Project');
     }

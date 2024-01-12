@@ -8,8 +8,8 @@ import { UserModule } from "../user/user.module";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Event]),
-  UserModule],
+    UserModule],
   controllers: [EventController],
   providers: [EventService, JwtService],
 })
-export class EventModule {}
+export class EventModule { }
