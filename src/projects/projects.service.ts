@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateProjectDto } from "./dto/create-project.dto";
 import { Repository } from "typeorm";
 import { Project } from "./entities/project.entity";
@@ -28,7 +28,7 @@ export class ProjectsService {
   async findProjectById(id: string) {
     const findProject =  await this.projetcsRepository.findOne({ where : {id : id}})
     if (findProject === null) {
-      throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
+      throw new NotFoundException('Project not found')
     }
     return findProject
   }

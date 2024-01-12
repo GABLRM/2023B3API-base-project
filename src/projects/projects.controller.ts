@@ -3,7 +3,7 @@ import {
   Controller, ForbiddenException,
   Get,
   HttpException,
-  HttpStatus,
+  HttpStatus, NotFoundException,
   Param,
   Post,
   Req,
@@ -69,7 +69,7 @@ export class ProjectsController {
     const currentUser = await this.userService.findOne(req.user.sub);
     const desiredProject = await this.projectsService.findProjectById(id);
     if (desiredProject === null) {
-      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Project not found');
     }
     if (currentUser.role !== 'Employee') {
       return desiredProject;

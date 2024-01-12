@@ -3,14 +3,15 @@ import { EventService } from "./event.service";
 import { AuthGuard } from "../auth/jwt-auth.guard";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { UserService } from "../user/user.service";
-import { EventType } from "./entities/event.entity";
+import { EventStatus, EventType } from "./entities/event.entity";
+import { UserRole } from "../user/entities/user.entity";
 
 
 @Controller('events')
 export class EventController {
   constructor(
       private readonly eventService: EventService,
-      private readonly userService: UserService
+      private readonly userService: UserService,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -25,6 +26,7 @@ export class EventController {
         if (remoteWork == 2) {
           throw new UnauthorizedException("You have already two remotes works this week !")
         }
+        eventUser.eventStatus = EventStatus.ACCEPTED
       }
       if (new Date(eventUser.date).getTime() == new Date(event.date).getTime()) {
         throw new UnauthorizedException("You have already an event this day")
@@ -41,7 +43,31 @@ export class EventController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.eventService.findOne(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post(':id/validate')
+  async validate(@Req() req, @Body() body, @Param('id') id :string)  {
+    const currentUser = await this.userService.findEmployee(req.user.sub);
+    const event = await this.eventService.findOne(id);
+    if (currentUser.role === UserRole.EMPLOYEE || event.eventStatus !== EventStatus.PENDING) {
+      throw new UnauthorizedException("you are not allowed");
+    }
+    if (currentUser.role === UserRole.PROJECTMANAGER) {
+    }
+    return this.eventService.validate(event.id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post(':id/decline')
+  async decline(@Req() req, @Body() body, @Param('id') id :string)  {
+    const currentUser = await this.userService.findEmployee(req.user.sub);
+    const event = await this.eventService.findOne(id);
+    if (currentUser.role === UserRole.EMPLOYEE || event.eventStatus !== EventStatus.PENDING) {
+      throw new UnauthorizedException("you are not allowed");
+    }
+    return this.eventService.decline(event.id);
   }
 }

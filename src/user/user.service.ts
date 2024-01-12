@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './entities/user.entity';
@@ -35,7 +35,7 @@ export class UserService {
   async findEmployee(uuid: string) {
     const findEmployee = await this.usersRepository.findOne({where: {id: uuid}});
     if (findEmployee === null) {
-      throw new HttpException("employee not found", HttpStatus.NOT_FOUND);
+      throw new NotFoundException("employee not found");
     }
     return findEmployee;
   }
