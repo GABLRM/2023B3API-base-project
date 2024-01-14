@@ -4,6 +4,7 @@ import { AuthGuard } from "../auth/jwt-auth.guard";
 import { UserService } from "../user/user.service";
 import { CreateProjectUserDto } from "./dto/create-project-user.dto";
 import { ProjectsService } from "../projects/projects.service";
+import { UserRole } from "../user/entities/user.entity";
 
 @Controller('project-users')
 export class ProjectUserController {
@@ -17,7 +18,7 @@ export class ProjectUserController {
   @Get()
   async getProjectUser(@Req() req) {
     const currentUser = await this.userService.findOne(req.user.sub);
-    if (currentUser.role !== 'Employee') {
+    if (currentUser.role !== UserRole.EMPLOYEE) {
       return this.projectUserService.findAll();
     } else {
       return this.projectUserService.userInProject(req.user.sub);
@@ -28,7 +29,7 @@ export class ProjectUserController {
   @Get(':id')
   async findSpecificProject(@Req() req, @Param('id') id: string) {
     const currentUser = await this.userService.findOne(req.user.sub);
-    if (currentUser.role !== 'Employee') {
+    if (currentUser.role !== UserRole.EMPLOYEE) {
       return await this.projectUserService.findOne(id);
     } else {
       const employeeProject = await this.projectUserService.findEmployeeProject(id, currentUser.id);
@@ -55,7 +56,7 @@ export class ProjectUserController {
         throw new ConflictException("You are already in a project in this date");
       }
     }
-    if (currentUser.role !== 'Employee') {
+    if (currentUser.role !== UserRole.EMPLOYEE) {
       return this.projectUserService.create(createProjectUser);
     } else {
       throw new UnauthorizedException('Employee can create Project');

@@ -4,6 +4,7 @@ import { CreateProjectDto } from "./dto/create-project.dto";
 import { AuthGuard } from "../auth/jwt-auth.guard";
 import { UserService } from "../user/user.service";
 import { ProjectUserService } from "../project-user/project-user.service";
+import { User, UserRole } from "../user/entities/user.entity";
 
 @Controller('projects')
 export class ProjectsController {
@@ -18,8 +19,8 @@ export class ProjectsController {
   async create(@Req() req, @Body() createProjectDto: CreateProjectDto) {
     const currentUser = await this.userService.findOne(req.user.sub);
     const referringEmployee = await this.userService.findOne(createProjectDto.referringEmployeeId,);
-    if (referringEmployee.role !== 'Employee') {
-      if (currentUser.role === 'Admin') {
+    if (referringEmployee.role !== UserRole.EMPLOYEE) {
+      if (currentUser.role === UserRole.ADMIN) {
         return this.projectsService.create(createProjectDto);
       } else {
         throw new UnauthorizedException();
@@ -33,7 +34,7 @@ export class ProjectsController {
   @Get()
   async findProject(@Req() req) {
     const currentUser = await this.userService.findOne(req.user.sub);
-    if (currentUser.role !== 'Employee') {
+    if (currentUser.role !== UserRole.EMPLOYEE) {
       const allProject = await this.projectsService.findAll();
       for (const project of allProject) {
         project["referringEmployee"] = await this.userService.findEmployee(project.referringEmployeeId);
@@ -59,7 +60,7 @@ export class ProjectsController {
     if (desiredProject === null) {
       throw new NotFoundException('Project not found');
     }
-    if (currentUser.role !== 'Employee') {
+    if (currentUser.role !== UserRole.EMPLOYEE) {
       return desiredProject;
     } else {
       const userProject = await this.projectUserService.findUserProjectWithProjectId(desiredProject.id);
